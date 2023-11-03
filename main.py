@@ -1,9 +1,10 @@
 from datetime import datetime, date, timedelta
 
+
 def get_birthdays_per_week(users):
     # Отримуємо поточну дату
-    current_date = datetime.today().date()
-    
+    current_date = date.today()
+
     # Ініціалізуємо словник для зберігання користувачів на кожний день тижня
     birthdays_per_week = {
         'Monday': [],
@@ -12,37 +13,25 @@ def get_birthdays_per_week(users):
         'Thursday': [],
         'Friday': []
     }
-    if users == [{}] :
-        return birthdays_per_week
-    
+    if not users :
+        return {}
+
     for user in users:
-            # Перевіряємо, чи має користувач день народження в цьому році
-            birthday_this_year = current_date.replace(month=user['birthday'].month, day=user['birthday'].day)
-            
-            # Якщо день народження вже минув цього року
-            if birthday_this_year < current_date:
-                return birthdays_per_week
-                # Додаємо 1 рік до дня народження
-            birthday_this_year = current_date.replace(year=current_date.year + 1, month=user['birthday'].month, day=user['birthday'].day)
-            
-            # Перевіряємо, чи день народження є у наступному тижні
-            if current_date <= birthday_this_year <= current_date + timedelta(days=6):
-                # Отримуємо день тижня для дня народження користувача
-                day_of_week = birthday_this_year.strftime('%A')
-                # Додаємо ім'я користувача до відповідного дня тижня в словнику
-                birthdays_per_week[day_of_week].append(user['name'])
-            
-            # Якщо користувач має народився на вихідні, переносимо його на понеділок
-            if birthday_this_year.weekday() >= 5:
-                next_monday = current_date + timedelta(days=(7 - current_date.weekday()))
-                # Перевіряємо, чи день народження попадає на наступний тиждень
-                if next_monday <= birthday_this_year <= next_monday + timedelta(days=6):
-                    # Отримуємо день тижня для дня народження користувача
-                    day_of_week = birthday_this_year.strftime('%A')
-                    # Додаємо ім'я користувача до відповідного дня тижня в словнику
-                    birthdays_per_week[day_of_week].append(user['name'])
-    
-    return birthdays_per_week
+        birthday_this_year = current_date.replace(month=user['birthday'].month, day=user['birthday'].day)
+        if birthday_this_year < current_date:
+            birthday_this_year = current_date.replace(year=current_date.year + 1, month=user['birthday'].month,
+                                                  day=user['birthday'].day)
+
+        if current_date <= birthday_this_year <= current_date + timedelta(days=6):
+
+            day_of_week = birthday_this_year.strftime('%A')
+            if day_of_week in ('Sunday', 'Sataday'):
+                birthdays_per_week.get('Monday').append(user['name'])
+            else:
+                birthdays_per_week.get(day_of_week).append(user['name'])
+
+
+    return  {day: name for day, name in birthdays_per_week.items() if name}
 
 
 if __name__ == "__main__":
